@@ -1,3 +1,14 @@
+# create a function to generate the authorization header for cosmos db rest api
+function Get-AuthorizationHeader($Verb, $ResourceId, $ResourceType, $Date, $MasterKey) {
+    $keyBytes = [System.Convert]::FromBase64String($MasterKey)
+    $text = "$($Verb.ToLower())`n$($ResourceType.ToLower())`n$ResourceId`n$($Date.ToLower())`n`n"
+    $body = [System.Text.Encoding]::UTF8.GetBytes($text)
+    $hmacsha = New-Object System.Security.Cryptography.HMACSHA256 -ArgumentList @(, $keyBytes)
+    $hash = $hmacsha.ComputeHash($body)
+    $signature = [System.Convert]::ToBase64String($hash)
+    return [System.Uri]::EscapeDataString("type=master&ver=1.0&sig=$signature")
+}
+
 # create a function to upsert a document in cosmos db using the rest api
 function upsertDocument($uri, $key, $database, $collection, $document) {
     $headers = @{
@@ -45,13 +56,15 @@ $files = Get-ChildItem -Path "C:\temp\files" -Filter "*.json" -Recurse
 $files = Get-ChildItem -Path "C:\temp\files" -Filter "*.json"
 
 # iterate over each file write the contents to host
-
-
-
-
+foreach ($file in $files) {
+    Write-Host "File: $($file.FullName)"
+    $content = Get-Content -Path $file.FullName -Raw
+    Write-Host $content
+}
 
 
 
 # get sum of two numbers
-
-
+function Get-Sum($a, $b) {
+    return $a + $b
+}

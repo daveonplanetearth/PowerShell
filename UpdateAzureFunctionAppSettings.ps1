@@ -18,5 +18,5 @@ foreach ($functionApp in $functionApps) {
 
     Write-Host "Function name: $functionAppName"
 
-    Update-AzFunctionAppSetting -Name $functionAppName -ResourceGroupName $resourceGroupName -AppSetting @{"TestSetting" = "Value1"}
+    Update-AzFunctionAppSetting -Name $functionAppName -ResourceGroupName $resourceGroupName -AppSetting @{$appSettingName = $appSettingValue}
 }
